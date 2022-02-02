@@ -1,5 +1,5 @@
 <template>
-  <transition name="el-alert-fade">
+  <transition :name="ns.b('fade')">
     <div
       v-show="visible"
       :class="[ns.b(), ns.m(type), ns.is('center', center), ns.is(effect)]"
@@ -7,14 +7,14 @@
     >
       <el-icon
         v-if="showIcon && iconComponent"
-        :class="[ns.e('icon'), isBigIcon]"
+        :class="[ns.e('icon'), ns.is('big', isBigIcon)]"
       >
         <component :is="iconComponent" />
       </el-icon>
       <div :class="ns.e('content')">
         <span
           v-if="title || $slots.title"
-          :class="[ns.e('title'), isBoldTitle]"
+          :class="[ns.e('title'), ns.is('bold', isBoldTitle)]"
         >
           <slot name="title">{{ title }}</slot>
         </span>
@@ -32,62 +32,37 @@
             {{ closeText }}
           </div>
           <el-icon v-else :class="ns.e('closebtn')" @click="close">
-            <close />
+            <Close />
           </el-icon>
         </template>
       </div>
     </div>
   </transition>
 </template>
-<script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+
+<script lang="ts" name="ElAlert" setup>
+import { computed, ref, useSlots } from 'vue'
 import { ElIcon } from '@element-plus/components/icon'
-import { TypeComponents, TypeComponentsMap } from '@element-plus/utils/icon'
+import { TypeComponentsMap } from '@element-plus/utils/icon'
 import { useNamespace } from '@element-plus/hooks'
+import { Close } from '@element-plus/icons-vue'
 import { alertProps, alertEmits } from './alert'
 
-export default defineComponent({
-  name: 'ElAlert',
+const props = defineProps(alertProps)
+const emit = defineEmits(alertEmits)
+const slots = useSlots()
+const ns = useNamespace('alert')
 
-  components: {
-    ElIcon,
-    ...TypeComponents,
-  },
+const visible = ref(true) // TODO: use v-model
 
-  props: alertProps,
-  emits: alertEmits,
+const iconComponent = computed(
+  () => TypeComponentsMap[props.type] || TypeComponentsMap['info']
+)
+const isBigIcon = computed(() => !!(props.description || slots.default))
+const isBoldTitle = computed(() => !!(props.description || slots.default))
 
-  setup(props, { emit, slots }) {
-    const ns = useNamespace('alert')
-
-    // state
-    const visible = ref(true)
-
-    // computed
-    const iconComponent = computed(
-      () => TypeComponentsMap[props.type] || TypeComponentsMap['info']
-    )
-    const isBigIcon = computed(() =>
-      props.description || slots.default ? ns.is('big') : ''
-    )
-    const isBoldTitle = computed(() =>
-      props.description || slots.default ? ns.is('bold') : ''
-    )
-
-    // methods
-    const close = (evt: MouseEvent) => {
-      visible.value = false
-      emit('close', evt)
-    }
-
-    return {
-      ns,
-      visible,
-      iconComponent,
-      isBigIcon,
-      isBoldTitle,
-      close,
-    }
-  },
-})
+const close = (evt: MouseEvent) => {
+  visible.value = false
+  emit('close', evt)
+}
 </script>

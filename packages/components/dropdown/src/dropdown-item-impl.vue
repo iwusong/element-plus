@@ -11,7 +11,7 @@
     :class="[ns.be('menu', 'item'), ns.is('disabled', disabled)]"
     :tabindex="tabIndex"
     role="menuitem"
-    @click="(e) => $emit('clickimpl', e)"
+    @click="(e) => $emit('click', e)"
     @focus="handleFocus"
     @keydown="handleKeydown"
     @mousedown="handleMousedown"
@@ -45,7 +45,7 @@ export default defineComponent({
     ElIcon,
   },
   props: dropdownItemProps,
-  emits: ['pointermove', 'pointerleave', 'click', 'clickimpl'],
+  emits: ['pointermove', 'pointerleave', 'click'],
   setup(_, { emit }) {
     const ns = useNamespace('dropdown')
 
@@ -78,7 +78,7 @@ export default defineComponent({
       if (code === EVENT_CODE.enter || code === EVENT_CODE.space) {
         e.preventDefault()
         e.stopImmediatePropagation()
-        emit('clickimpl', e)
+        emit('click', e)
         return true
       }
     }, handleItemKeydown)

@@ -7,7 +7,7 @@ export const generateExternal = async (options: { full: boolean }) => {
   const { dependencies, peerDependencies } = await getPackageDependencies(
     epPackage
   )
-
+  console.log(epPackage)
   return (id: string) => {
     const packages: string[] = peerDependencies
     if (!options.full) {

@@ -24,7 +24,9 @@ export const getPackageDependencies = (
 ): Record<'dependencies' | 'peerDependencies', string[]> => {
   const manifest = getPackageManifest(pkgPath)
   const { dependencies = {}, peerDependencies = {} } = manifest
-
+  console.log(manifest)
+  console.log(peerDependencies)
+  console.log(peerDependencies)
   return {
     dependencies: Object.keys(dependencies),
     peerDependencies: Object.keys(peerDependencies),
